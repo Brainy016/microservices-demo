@@ -7,7 +7,7 @@ on:
     branches: [ aws-deploy, main ]
 
 env:
-  ECR_REPOSITORY_BASE: 730335212840.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/my-service
+  ECR_REPOSITORY_BASE: 730335212840.dkr.ecr.${{vars.AWS_REGION}}.amazonaws.com/my-service
 
 jobs:
   build-adservice:
