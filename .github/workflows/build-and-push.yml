@@ -27,15 +27,22 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+      env:
+        AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID }} # secrets stored in github
+        AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+      run: |
+        aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+        aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+        aws configure set default.region $AWS_DEFAULT_REGION
+
+    - name: Verify AWS credentials
+      run: |
+        aws sts get-caller-identity
 
     - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
+      run: |
+        aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -56,3 +63,4 @@ jobs:
     - name: Output image URI
       run: |
         echo "AdService image pushed to: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:adservice-${{ github.sha }}"
+        echo "AdService latest image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:adservice-latest"
