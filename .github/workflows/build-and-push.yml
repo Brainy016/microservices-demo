@@ -1,15 +1,15 @@
-name: Build and Push AdService
+name: Build and Push All Microservices
 
 on:
   push:
     branches: [ aws-deploy ]
     paths:
-      - 'src/adservice/**'
+      - 'src/**'
       - '.github/workflows/build-and-push.yml'
   pull_request:
     branches: [ aws-deploy ]
     paths:
-      - 'src/adservice/**'
+      - 'src/**'
       - '.github/workflows/build-and-push.yml'
 
 env:
@@ -18,9 +18,24 @@ env:
   ECR_REPOSITORY: my-service
 
 jobs:
-  build-adservice:
-    name: Build and Push AdService
+  build-microservices:
+    name: Build and Push ${{ matrix.service }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: 
+          - adservice
+          - cartservice
+          - checkoutservice
+          - currencyservice
+          - emailservice
+          - frontend
+          - loadgenerator
+          - paymentservice
+          - productcatalogservice
+          - recommendationservice
+          - shippingservice
+          - shoppingassistantservice
     
     steps:
     - name: Checkout code
@@ -47,20 +62,33 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Build, tag, and push AdService image
+    - name: Check if Dockerfile exists
+      id: dockerfile-check
+      run: |
+        if [ -f "src/${{ matrix.service }}/Dockerfile" ]; then
+          echo "dockerfile-exists=true" >> $GITHUB_OUTPUT
+          echo "Dockerfile found for ${{ matrix.service }}"
+        else
+          echo "dockerfile-exists=false" >> $GITHUB_OUTPUT
+          echo "No Dockerfile found for ${{ matrix.service }}"
+        fi
+
+    - name: Build, tag, and push ${{ matrix.service }} image
+      if: steps.dockerfile-check.outputs.dockerfile-exists == 'true'
       env:
         IMAGE_TAG: ${{ github.sha }}
+        SERVICE: ${{ matrix.service }}
       run: |
-        # Build and push the adservice image
+        # Build and push the microservice image
         docker buildx build \
           --platform linux/amd64 \
           --push \
-          --tag ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:adservice-${{ env.IMAGE_TAG }} \
-          --tag ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:adservice-latest \
-          --file src/adservice/Dockerfile \
-          src/adservice/
+          --tag ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.SERVICE }}-${{ env.IMAGE_TAG }} \
+          --tag ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.SERVICE }}-latest \
+          --file src/${{ env.SERVICE }}/Dockerfile \
+          src/${{ env.SERVICE }}/
 
     - name: Output image URI
       run: |
-        echo "AdService image pushed to: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:adservice-${{ github.sha }}"
-        echo "AdService latest image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:adservice-latest"
+        echo "${{ matrix.service }} image pushed to: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ matrix.service }}-${{ github.sha }}"
+        echo "${{ matrix.service }} latest image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ matrix.service }}-latest"
