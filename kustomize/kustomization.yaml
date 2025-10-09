@@ -32,3 +32,39 @@ components:
 # - components/container-images-tag
 # - components/container-images-tag-suffix
 # - components/container-images-registry
+
+# AWS ECR Image Overrides
+images:
+- name: adservice
+  newName: 730335212840.dkr.ecr.eu-north-1.amazonaws.com/my-service
+  newTag: adservice-${COMMIT_HASH}
+- name: cartservice
+  newName: 730335212840.dkr.ecr.eu-north-1.amazonaws.com/my-service
+  newTag: cartservice-${COMMIT_HASH}
+- name: checkoutservice
+  newName: 730335212840.dkr.ecr.eu-north-1.amazonaws.com/my-service
+  newTag: checkoutservice-${COMMIT_HASH}
+- name: currencyservice
+  newName: 730335212840.dkr.ecr.eu-north-1.amazonaws.com/my-service
+  newTag: currencyservice-${COMMIT_HASH}
+- name: emailservice
+  newName: 730335212840.dkr.ecr.eu-north-1.amazonaws.com/my-service
+  newTag: emailservice-${COMMIT_HASH}
+- name: frontend
+  newName: 730335212840.dkr.ecr.eu-north-1.amazonaws.com/my-service
+  newTag: frontend-${COMMIT_HASH}
+- name: loadgenerator
+  newName: 730335212840.dkr.ecr.eu-north-1.amazonaws.com/my-service
+  newTag: loadgenerator-${COMMIT_HASH}
+- name: paymentservice
+  newName: 730335212840.dkr.ecr.eu-north-1.amazonaws.com/my-service
+  newTag: paymentservice-${COMMIT_HASH}
+- name: productcatalogservice
+  newName: 730335212840.dkr.ecr.eu-north-1.amazonaws.com/my-service
+  newTag: productcatalogservice-${COMMIT_HASH}
+- name: recommendationservice
+  newName: 730335212840.dkr.ecr.eu-north-1.amazonaws.com/my-service
+  newTag: recommendationservice-${COMMIT_HASH}
+- name: shippingservice
+  newName: 730335212840.dkr.ecr.eu-north-1.amazonaws.com/my-service
+  newTag: shippingservice-${COMMIT_HASH}
