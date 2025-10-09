@@ -2,7 +2,7 @@ name: Build and Push All Microservices
 
 on:
   push:
-    branches: [ aws-deploy, main  ]
+    branches: [ aws-deploy]
     paths:
       - 'src/**'
       - '.github/workflows/build-and-push.yml'
